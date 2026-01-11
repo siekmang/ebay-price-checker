@@ -104,3 +104,6 @@ if __name__ == '__main__':
         ebay_search()
     except Exception as e:
         print(f"An error occurred: {e}")
+
+    print("\n" + "="*20)
+    input("Search complete. Press Enter to close this window...")
