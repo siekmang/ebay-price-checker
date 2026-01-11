@@ -3,21 +3,31 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-'''TODO; Handle errors and exceptions gracefully'''
-'''TODO; Messages to let the user know what is happening'''
+'''This script searches eBay for Nintendo Switch 2 listings and displays top results'''
 
 
 def ebay_search():
-    """Launch Firefox and perform eBay search for Nintendo Switch 2 Sealed in Box"""
-    '''Initialize and launch Firefox with headless mode'''
+    """Launch Firefox and perform eBay search for Nintendo Switch 2 Sealed in Box
+
+    Print the top three results with title, price, and link."""
+    search_query = 'Nintendo Switch 2 Sealed in Box'
+
+    '''Initialize Firefox in headless mode'''
     options = webdriver.FirefoxOptions()
     options.add_argument('--headless')
+    print("Launching Firefox and navigating to eBay...")
     selenium = webdriver.Firefox(options=options)
 
     '''Navigate to eBay and perform search'''
     selenium.get('https://www.ebay.com')
     search_bar = selenium.find_element(By.ID, 'gh-ac')
-    search_bar.send_keys('Nintendo Switch 2 Sealed in Box')
+    if search_query:
+        search_bar.send_keys(search_query)
+    else:
+        print("Search query is empty.")
+        selenium.quit()
+        return
+    print(f"Performing search for {search_query}...")
     search_bar.submit()
 
     '''Introduce wait'''
@@ -27,30 +37,35 @@ def ebay_search():
     video_game_console_locator = (By.XPATH, "//a[contains(., 'Video Game Consoles')]")
     video_game_console_element = wait.until(ec.element_to_be_clickable(video_game_console_locator))
 
+    print("Filtering by Video Game Consoles...")
     video_game_console_element.click()
 
     '''Click on Buy It Now'''
     buy_it_now_locator = (By.XPATH, "//a[contains(., 'Buy It Now')]")
     buy_it_now_button = wait.until(ec.element_to_be_clickable(buy_it_now_locator))
 
+    print("Filtering by Buy It Now...")
     buy_it_now_button.click()
 
     '''Click on Free Shipping'''
     free_shipping_locator = (By.XPATH, "//span[contains(., 'Free Shipping')]")
     free_shipping_element = wait.until(ec.presence_of_element_located(free_shipping_locator))
 
+    print("Filtering by Free Shipping...")
     free_shipping_element.click()
 
     '''Click on New'''
     new_locator = (By.XPATH, "//span[contains(., 'New')]")
     new_element = wait.until(ec.presence_of_element_located(new_locator))
 
+    print("Filtering by New...")
     new_element.click()
 
     '''Sort by Price'''
     sort_locator = (By.XPATH, "//span[contains(., 'Sort')]")
     sort_element = wait.until(ec.presence_of_element_located(sort_locator))
 
+    print("Sorting by Price...")
     sort_element.click()
 
     sort_by_price_locator = (By.XPATH, "//a[contains(., 'Price + Shipping: lowest first')]")
@@ -58,7 +73,7 @@ def ebay_search():
 
     sort_by_price_element.click()
 
-    '''Get results'''
+    '''Get and process search results'''
     results = selenium.find_elements(By.XPATH, "//li[contains(@class, 's-card--horizontal')]")
 
     for i in range(2, 5):
